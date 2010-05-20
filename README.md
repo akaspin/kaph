@@ -5,10 +5,7 @@
 ## Usage
 
 *kaph* does not interfere in node.js API. All that *kaph* do is two exports for 
-simplify response flow control:
-
-* `Handler` - template request handler class
-* `HttpError` - Exception class
+simplify response flow control
 
     var sys = require("sys");
     var http = require("http");
