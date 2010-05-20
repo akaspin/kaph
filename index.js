@@ -1,5 +1,6 @@
 var sys = require('sys');
 var http = require('http');
+var Buffer = require('buffer').Buffer;
 
 //openssl support
 var have_openssl;
@@ -140,7 +141,10 @@ Handler.prototype.end = function(data, encoding) {
 			
 			// and content length
 			if (!("Content-Length" in this._headers)) {
-				this.setHeader("Content-Length", data.length);
+				var l = this._encoding == 'utf8' ?
+						Buffer.byteLength(data, 'utf8') :
+						data.length;
+				this.setHeader("Content-Length", l);
 			}
 		}
 		this.sendHeaders();
