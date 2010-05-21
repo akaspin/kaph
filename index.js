@@ -1,5 +1,6 @@
 var sys = require('sys');
 var http = require('http');
+var url = require('url');
 var Buffer = require('buffer').Buffer;
 
 //openssl support
@@ -150,6 +151,22 @@ Handler.prototype.end = function(data, encoding) {
 		this.sendHeaders();
 	}	
 	this.response.end(data, (encoding || this._encoding));
+};
+
+/**
+ * Sends a redirect to the given (optionally relative) URL.
+ * @param redirectUrl Redirect URL
+ * @param permanent Permanent. Default = false
+ */
+Handler.prototype.redirect = function(redirectUrl, permanent) {
+	permanent = permanent || false;
+	if (this._headersWritten) {
+		throw new Error('Cannot redirect after headers have been written');
+	}
+	this.setStatus(permanent ? 301 : 302);
+	redirectUrl = redirectUrl.replace(/[\x00-\x1f]/, "");
+	this.setHeader('Location', url.resolve(this.request.url, redirectUrl));
+	this.end();
 };
 
 /**
