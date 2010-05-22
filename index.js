@@ -190,27 +190,15 @@ Handler.prototype.execute = function() {
 		
 		this[this.request.method].apply(this, this.args);
 	} catch (e) {
-		this._handleException(e);
+		this.handleError(e);
 	}
-};
-
-/**
- * Just resets all to initial states.
- */
-Handler.prototype.clear = function() {
-	this._headers = {
-			"Server": "node.js:" + process.version,
-			"Content-Type": "text/html; charset=UTF-8",
-	};
-	this._statusCode = 200;
-	this._encoding = 'utf8';
 };
 
 /**
  * Handles all exceptions in request. Logs it and send to client if possible.
  * @param e Exception
  */
-Handler.prototype._handleException = function(e) {
+Handler.prototype.handleError = function(e) {
 	if (e instanceof HttpError) {
 		if (e.code in http.STATUS_CODES) {
 			sys.error(this._summary() + " " + e);
@@ -229,6 +217,18 @@ Handler.prototype._handleException = function(e) {
 Handler.prototype._summary = function() {
 	return this.request.method + " " + this.request.url;
 }
+
+/**
+ * Just resets all to initial states.
+ */
+Handler.prototype.clear = function() {
+	this._headers = {
+			"Server": "node.js:" + process.version,
+			"Content-Type": "text/html; charset=UTF-8",
+	};
+	this._statusCode = 200;
+	this._encoding = 'utf8';
+};
 
 /**
  * HTTP Error
