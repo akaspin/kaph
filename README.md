@@ -2,7 +2,7 @@
 
 *kaph* is router-independent request handler for node.js.
 
-*In the Phoenician alphabet "Daleth" indicates door.
+*In the Phoenician alphabet letter "kaph" indicates palm.
 
 ## Usage
 
