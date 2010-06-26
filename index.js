@@ -41,19 +41,19 @@ Handler.prototype.HEAD = function() {
 };
 
 Handler.prototype.GET = function() {
-	throw new HttpError(405, "GET not implemented")
+	throw new HttpError(405, "GET not implemented");
 };
 
 Handler.prototype.POST = function() {
-	throw new HttpError(405, "POST not implemented")
+	throw new HttpError(405, "POST not implemented");
 };
 
 Handler.prototype.PUT = function() {
-	throw new HttpError(405, "PUT not implemented")
+	throw new HttpError(405, "PUT not implemented");
 };
 
 Handler.prototype.DELETE = function() {
-	throw new HttpError(405, "DELETE not implemented")
+	throw new HttpError(405, "DELETE not implemented");
 };
 
 /**
@@ -66,7 +66,7 @@ Handler.prototype.getErrorHtml = function(code, message) {
 	var msg = code + ": " + message; 
 	return "<html><title>" + msg + "</title>" +
 			"<body>" + msg + "</body></html>";
-}
+};
 
 /**
  * Sets response status code.
@@ -74,7 +74,7 @@ Handler.prototype.getErrorHtml = function(code, message) {
  */
 Handler.prototype.setStatus = function(code) {
 	if (code in http.STATUS_CODES) this._statusCode = code;
-}
+};
 
 /**
  * Sets the given response header name and value.
@@ -82,7 +82,7 @@ Handler.prototype.setStatus = function(code) {
  * @param value Header value
  */
 Handler.prototype.setHeader = function(name, value) {
-	var value = value.toString()
+	var value = value.toString();
 	var safe = value.replace(/[\x00-\x1f]/, " ").substring(0, 4000);
 	if (safe != value) throw new Error('Unsafe header value ' + value);
 	this._headers[name] = value;
@@ -216,7 +216,7 @@ Handler.prototype.handleError = function(e) {
 
 Handler.prototype._summary = function() {
 	return this.request.method + " " + this.request.url;
-}
+};
 
 /**
  * Just resets all to initial states.
@@ -224,7 +224,7 @@ Handler.prototype._summary = function() {
 Handler.prototype.clear = function() {
 	this._headers = {
 			"Server": "node.js:" + process.version,
-			"Content-Type": "text/html; charset=UTF-8",
+			"Content-Type": "text/html; charset=UTF-8"
 	};
 	this._statusCode = 200;
 	this._encoding = 'utf8';
