@@ -23,37 +23,37 @@ try {
  * @returns {Handler}
  */
 function Handler(request, response, args) {
-	this.request = request;
-	this.response = response;
-	this.args = args || [];
-	
-	this._headersWritten = false; // Headers not written
-	
-	this.clear();
+    this.request = request;
+    this.response = response;
+    this.args = args || [];
+    
+    this._headersWritten = false; // Headers not written
+    
+    this.clear();
 }
 exports.Handler = Handler;
 
 Handler.prototype._supportedMethods = 
-		['HEAD', 'GET', 'POST', 'PUT', 'DELETE'];
+        ['HEAD', 'GET', 'POST', 'PUT', 'DELETE'];
 
 Handler.prototype.HEAD = function() {
-	throw new HttpError(405, "HEAD not implemented");
+    throw new HttpError(405, "HEAD not implemented");
 };
 
 Handler.prototype.GET = function() {
-	throw new HttpError(405, "GET not implemented");
+    throw new HttpError(405, "GET not implemented");
 };
 
 Handler.prototype.POST = function() {
-	throw new HttpError(405, "POST not implemented");
+    throw new HttpError(405, "POST not implemented");
 };
 
 Handler.prototype.PUT = function() {
-	throw new HttpError(405, "PUT not implemented");
+    throw new HttpError(405, "PUT not implemented");
 };
 
 Handler.prototype.DELETE = function() {
-	throw new HttpError(405, "DELETE not implemented");
+    throw new HttpError(405, "DELETE not implemented");
 };
 
 /**
@@ -63,9 +63,9 @@ Handler.prototype.DELETE = function() {
  * @returns Error html
  */
 Handler.prototype.getErrorHtml = function(code, message) {
-	var msg = code + ": " + message; 
-	return "<html><title>" + msg + "</title>" +
-			"<body>" + msg + "</body></html>";
+    var msg = code + ": " + message; 
+    return "<html><title>" + msg + "</title>" +
+            "<body>" + msg + "</body></html>";
 };
 
 /**
@@ -73,7 +73,7 @@ Handler.prototype.getErrorHtml = function(code, message) {
  * @param code Status code
  */
 Handler.prototype.setStatus = function(code) {
-	if (code in http.STATUS_CODES) this._statusCode = code;
+    if (code in http.STATUS_CODES) this._statusCode = code;
 };
 
 /**
@@ -82,18 +82,18 @@ Handler.prototype.setStatus = function(code) {
  * @param value Header value
  */
 Handler.prototype.setHeader = function(name, value) {
-	var value = value.toString();
-	var safe = value.replace(/[\x00-\x1f]/, " ").substring(0, 4000);
-	if (safe != value) throw new Error('Unsafe header value ' + value);
-	this._headers[name] = value;
+    var value = value.toString();
+    var safe = value.replace(/[\x00-\x1f]/, " ").substring(0, 4000);
+    if (safe != value) throw new Error('Unsafe header value ' + value);
+    this._headers[name] = value;
 };
 
 /**
  * Sends all headers to client.
  */
 Handler.prototype.sendHeaders = function() {
-	this._headersWritten = true;
-	this.response.writeHead(this._statusCode, this._headers);
+    this._headersWritten = true;
+    this.response.writeHead(this._statusCode, this._headers);
 };
 
 /**
@@ -102,16 +102,16 @@ Handler.prototype.sendHeaders = function() {
  * @param encoding
  */
 Handler.prototype.write = function(data, encoding) {
-	if (!this._headersWritten) {
-		this.sendHeaders();
-	}
-//	if (data instanceof Object) {
-//		this.setHeader("Content-Type", "text/javascript; charset=UTF-8");
-//		data = JSON.stringify(data);
-//	}
-	
-	this.response.write((data == undefined ? "" : data.toString()), 
-			(encoding || this._encoding));
+    if (!this._headersWritten) {
+        this.sendHeaders();
+    }
+//    if (data instanceof Object) {
+//        this.setHeader("Content-Type", "text/javascript; charset=UTF-8");
+//        data = JSON.stringify(data);
+//    }
+    
+    this.response.write((data == undefined ? "" : data.toString()), 
+            (encoding || this._encoding));
 };
 
 /**
@@ -120,37 +120,37 @@ Handler.prototype.write = function(data, encoding) {
  * @param encoding
  */
 Handler.prototype.end = function(data, encoding) {
-	data = data || "";
-	if (!this._headersWritten) {
-		// If headers not written yet - add some info in headers:
-		
-		// ETags
-		if (this._statusCode == 200 && this.request.method == 'GET' &&
-				!('ETag' in this._headers) && have_openssl) {
-			etag = '"' + crypto.createHash("sha1").
-					update(data).digest("hex") + '"';
-			
-			var inm = this.request.headers["if-none-match"];
-			if (inm && inm.indexOf(etag) != -1) {
-				// Not modified - just send 304
-				this.response.writeHead(304);
-				this.response.end("");
-				return;
-			} else {
-				this.setHeader("ETag", etag);
-			}
-			
-			// and content length
-			if (!("Content-Length" in this._headers)) {
-				var l = this._encoding == 'utf8' ?
-						Buffer.byteLength(data, 'utf8') :
-						data.length;
-				this.setHeader("Content-Length", l);
-			}
-		}
-		this.sendHeaders();
-	}	
-	this.response.end(data, (encoding || this._encoding));
+    data = data || "";
+    if (!this._headersWritten) {
+        // If headers not written yet - add some info in headers:
+        
+        // ETags
+        if (this._statusCode == 200 && this.request.method == 'GET' &&
+                !('ETag' in this._headers) && have_openssl) {
+            etag = '"' + crypto.createHash("sha1").
+                    update(data).digest("hex") + '"';
+            
+            var inm = this.request.headers["if-none-match"];
+            if (inm && inm.indexOf(etag) != -1) {
+                // Not modified - just send 304
+                this.response.writeHead(304);
+                this.response.end("");
+                return;
+            } else {
+                this.setHeader("ETag", etag);
+            }
+            
+            // and content length
+            if (!("Content-Length" in this._headers)) {
+                var l = this._encoding == 'utf8' ?
+                        Buffer.byteLength(data, 'utf8') :
+                        data.length;
+                this.setHeader("Content-Length", l);
+            }
+        }
+        this.sendHeaders();
+    }    
+    this.response.end(data, (encoding || this._encoding));
 };
 
 /**
@@ -159,14 +159,14 @@ Handler.prototype.end = function(data, encoding) {
  * @param permanent Permanent. Default = false
  */
 Handler.prototype.redirect = function(redirectUrl, permanent) {
-	permanent = permanent || false;
-	if (this._headersWritten) {
-		throw new Error('Cannot redirect after headers have been written');
-	}
-	this.setStatus(permanent ? 301 : 302);
-	redirectUrl = redirectUrl.replace(/[\x00-\x1f]/, "");
-	this.setHeader('Location', url.resolve(this.request.url, redirectUrl));
-	this.end();
+    permanent = permanent || false;
+    if (this._headersWritten) {
+        throw new Error('Cannot redirect after headers have been written');
+    }
+    this.setStatus(permanent ? 301 : 302);
+    redirectUrl = redirectUrl.replace(/[\x00-\x1f]/, "");
+    this.setHeader('Location', url.resolve(this.request.url, redirectUrl));
+    this.end();
 };
 
 /**
@@ -175,23 +175,23 @@ Handler.prototype.redirect = function(redirectUrl, permanent) {
  * @param message Error Message
  */
 Handler.prototype.sendError = function(code, message) {
-	this.clear();
-	this.setStatus(code);
-	this.end(this.getErrorHtml(code, message));
+    this.clear();
+    this.setStatus(code);
+    this.end(this.getErrorHtml(code, message));
 };
 
 /**
  * Actually executes handler.
  */
 Handler.prototype.execute = function() {
-	try {
-		if (this._supportedMethods.indexOf(this.request.method) == -1)
-			throw new HttpError(405);
-		
-		this[this.request.method].apply(this, this.args);
-	} catch (e) {
-		this.handleError(e);
-	}
+    try {
+        if (this._supportedMethods.indexOf(this.request.method) == -1)
+            throw new HttpError(405);
+        
+        this[this.request.method].apply(this, this.args);
+    } catch (e) {
+        this.handleError(e);
+    }
 };
 
 /**
@@ -199,35 +199,35 @@ Handler.prototype.execute = function() {
  * @param e Exception
  */
 Handler.prototype.handleError = function(e) {
-	if (e instanceof HttpError) {
-		if (e.code in http.STATUS_CODES) {
-			sys.error(this._summary() + " " + e);
-			this.sendError(e.code, e.reason);
-		} else {
-			sys.error("Bad HTTP status code " + e.code);
-			this.sendError(e.code, e.reason);
-		}
-	} else {
-		sys.error("Uncaught exception in " + this._summary() + "\n" +
-				(e.stack || e));
-		this.sendError(500, (e.stack || e));
-	}
+    if (e instanceof HttpError) {
+        if (e.code in http.STATUS_CODES) {
+            sys.error(this._summary() + " " + e);
+            this.sendError(e.code, e.reason);
+        } else {
+            sys.error("Bad HTTP status code " + e.code);
+            this.sendError(e.code, e.reason);
+        }
+    } else {
+        sys.error("Uncaught exception in " + this._summary() + "\n" +
+                (e.stack || e));
+        this.sendError(500, (e.stack || e));
+    }
 };
 
 Handler.prototype._summary = function() {
-	return this.request.method + " " + this.request.url;
+    return this.request.method + " " + this.request.url;
 };
 
 /**
  * Just resets all to initial states.
  */
 Handler.prototype.clear = function() {
-	this._headers = {
-			"Server": "node.js:" + process.version,
-			"Content-Type": "text/html; charset=UTF-8"
-	};
-	this._statusCode = 200;
-	this._encoding = 'utf8';
+    this._headers = {
+            "Server": "node.js:" + process.version,
+            "Content-Type": "text/html; charset=UTF-8"
+    };
+    this._statusCode = 200;
+    this._encoding = 'utf8';
 };
 
 /**
@@ -236,11 +236,11 @@ Handler.prototype.clear = function() {
  * @param reason Reason
  */
 function HttpError(code, reason) {
-	//Error.call(this);
-	this.name = "HttpError";
-	this.code = code || 500;
-	this.reason = reason || http.STATUS_CODES[this.code] || "Not implemented";
-	this.message = this.code + " " + this.reason;
+    //Error.call(this);
+    this.name = "HttpError";
+    this.code = code || 500;
+    this.reason = reason || http.STATUS_CODES[this.code] || "Not implemented";
+    this.message = this.code + " " + this.reason;
     Error.captureStackTrace(this);
 }
 sys.inherits(HttpError, Error);
