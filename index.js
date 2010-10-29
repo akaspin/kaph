@@ -1,4 +1,4 @@
-var sys = require('sys');
+var util = require('util');
 var http = require('http');
 var url = require('url');
 var Buffer = require('buffer').Buffer;
@@ -201,14 +201,14 @@ Handler.prototype.execute = function() {
 Handler.prototype.handleError = function(e) {
     if (e instanceof HttpError) {
         if (e.code in http.STATUS_CODES) {
-            sys.error(this._summary() + " " + e);
+            util.error(this._summary() + " " + e);
             this.sendError(e.code, e.reason);
         } else {
-            sys.error("Bad HTTP status code " + e.code);
+            util.error("Bad HTTP status code " + e.code);
             this.sendError(e.code, e.reason);
         }
     } else {
-        sys.error("Uncaught exception in " + this._summary() + "\n" +
+        util.error("Uncaught exception in " + this._summary() + "\n" +
                 (e.stack || e));
         this.sendError(500, (e.stack || e));
     }
@@ -243,5 +243,5 @@ function HttpError(code, reason) {
     this.message = this.code + " " + this.reason;
     Error.captureStackTrace(this);
 }
-sys.inherits(HttpError, Error);
+util.inherits(HttpError, Error);
 exports.HttpError = HttpError;
