@@ -1,66 +1,95 @@
+/**
+ * Kaph. Routerless HTTP handler for node.js
+ */
+
 var util = require('util');
 var http = require('http');
 var url = require('url');
 var Buffer = require('buffer').Buffer;
-
-//openssl support
-var have_openssl;
-try {
-  var crypto = require('crypto');
-  have_openssl=true;
-} catch (e) {
-  have_openssl=false;
-}
+var crypto = require('crypto');
 
 /**
  * Kaph request handler.
+ * 
  * @constructor
  * 
  * @param request Original request
  * @param response Original clear response
- * @param context Context
- * @param args Array of arguments
+ * @param args Optional Array of arguments
+ * @type args Array
  * @returns {Handler}
  */
 function Handler(request, response, args) {
+    // request
     this.request = request;
+    //response
     this.response = response;
+    // arguments
     this.args = args || [];
     
     this._headersWritten = false; // Headers not written
-    
-    this.clear();
+    this.clear(); // clear all
 }
 exports.Handler = Handler;
 
+// Supported methods
 Handler.prototype._supportedMethods = 
-        ['HEAD', 'GET', 'POST', 'PUT', 'DELETE'];
+        ['HEAD', 'GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'];
 
+/**
+ * HEAD method. Must be implemented.
+ * @throws HttpError
+ */
 Handler.prototype.HEAD = function() {
     throw new HttpError(405, "HEAD not implemented");
 };
 
+/**
+ * GET method. Must be implemented.
+ * @throws HttpError
+ */
 Handler.prototype.GET = function() {
     throw new HttpError(405, "GET not implemented");
 };
 
+/**
+ * POST method. Must be implemented.
+ * @throws HttpError
+ */
 Handler.prototype.POST = function() {
     throw new HttpError(405, "POST not implemented");
 };
 
+/**
+ * PUT method. Must be implemented.
+ * @throws HttpError
+ */
 Handler.prototype.PUT = function() {
     throw new HttpError(405, "PUT not implemented");
 };
 
+/**
+ * DELETE method. Must be implemented.
+ * @throws HttpError
+ */
 Handler.prototype.DELETE = function() {
     throw new HttpError(405, "DELETE not implemented");
 };
 
 /**
- * Generates error html.
+ * OPTIONS method. Must be implemented.
+ * @throws HttpError
+ * 
+ */
+Handler.prototype.OPTIONS = function() {
+    throw new HttpError(405, "OPTIONS not implemented");
+};
+
+/**
+ * Generate error HTML page.
  * @param code Status code
  * @param message Message
- * @returns Error html
+ * @returns {String} Error html
  */
 Handler.prototype.getErrorHtml = function(code, message) {
     var msg = code + ": " + message; 
@@ -80,6 +109,7 @@ Handler.prototype.setStatus = function(code) {
  * Sets the given response header name and value.
  * @param name Header name
  * @param value Header value
+ * @throws HttpError
  */
 Handler.prototype.setHeader = function(name, value) {
     var value = value.toString();
@@ -97,7 +127,8 @@ Handler.prototype.sendHeaders = function() {
 };
 
 /**
- * Writes data to client. If headers not sent - sends they first.
+ * Writes data to client. 
+ * If headers not sent - sends they first.
  * @param data 
  * @param encoding
  */
@@ -157,6 +188,7 @@ Handler.prototype.end = function(data, encoding) {
  * Sends a redirect to the given (optionally relative) URL.
  * @param redirectUrl Redirect URL
  * @param permanent Permanent. Default = false
+ * @throws HttpError
  */
 Handler.prototype.redirect = function(redirectUrl, permanent) {
     permanent = permanent || false;
@@ -181,7 +213,7 @@ Handler.prototype.sendError = function(code, message) {
 };
 
 /**
- * Actually executes handler.
+ * Executes handler. Catches all errors
  */
 Handler.prototype.execute = function() {
     try {
@@ -195,31 +227,36 @@ Handler.prototype.execute = function() {
 };
 
 /**
- * Handles all exceptions in request. Logs it and send to client if possible.
+ * Handles all exceptions in request. 
+ * Logs it and send to client if possible.
  * @param e Exception
  */
 Handler.prototype.handleError = function(e) {
     if (e instanceof HttpError) {
         if (e.code in http.STATUS_CODES) {
-            util.error(this._summary() + " " + e);
+            console.error(this._summary() + " " + e);
             this.sendError(e.code, e.reason);
         } else {
-            util.error("Bad HTTP status code " + e.code);
+            console.error("Bad HTTP status code %d", e.code);
             this.sendError(e.code, e.reason);
         }
     } else {
-        util.error("Uncaught exception in " + this._summary() + "\n" +
+        console.error("Uncaught exception in " + this._summary() + "\n" +
                 (e.stack || e));
         this.sendError(500, (e.stack || e));
     }
 };
 
+/**
+ * Get request summary.
+ * @returns {String}
+ */
 Handler.prototype._summary = function() {
     return this.request.method + " " + this.request.url;
 };
 
 /**
- * Just resets all to initial states.
+ * Cleans response.
  */
 Handler.prototype.clear = function() {
     this._headers = {
@@ -232,6 +269,7 @@ Handler.prototype.clear = function() {
 
 /**
  * HTTP Error
+ * @constructor
  * @param code Status code
  * @param reason Reason
  */
