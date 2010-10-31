@@ -9,7 +9,7 @@
 *kaph* does not interfere in node.js API. All that *kaph* do is two exports for 
 simplify response flow control:
 
-    var sys = require("sys");
+    var util = require("util");
     var http = require("http");
     var kaph = require("kaph");
     

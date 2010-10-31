@@ -32,6 +32,18 @@ function Handler(request, response, args) {
 }
 exports.Handler = Handler;
 
+/**
+ * Cleans response.
+ */
+Handler.prototype.clear = function() {
+    this._headers = {
+            "Server": "node.js:" + process.version,
+            "Content-Type": "text/html; charset=UTF-8"
+    };
+    this._statusCode = 200;
+    this._encoding = 'utf8';
+};
+
 // Supported methods
 Handler.prototype._supportedMethods = 
         ['HEAD', 'GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'];
@@ -129,10 +141,12 @@ Handler.prototype.sendHeaders = function() {
 /**
  * Writes data to client. 
  * If headers not sent - sends they first.
- * @param data 
- * @param encoding
+ * @param {Buffer||String} Data chunk. If no data - nothing happens. 
+ * @param {String} encoding
  */
 Handler.prototype.write = function(data, encoding) {
+    if (!data || data == null) return; // If no data - do nothing
+    
     if (!this._headersWritten) {
         this.sendHeaders();
     }
@@ -140,9 +154,8 @@ Handler.prototype.write = function(data, encoding) {
 //        this.setHeader("Content-Type", "text/javascript; charset=UTF-8");
 //        data = JSON.stringify(data);
 //    }
-    
-    this.response.write((data == undefined ? "" : data.toString()), 
-            (encoding || this._encoding));
+        
+    this.response.write(data, (encoding || this._encoding));
 };
 
 /**
@@ -173,15 +186,14 @@ Handler.prototype.end = function(data, encoding) {
             
             // and content length
             if (!("Content-Length" in this._headers)) {
-                var l = this._encoding == 'utf8' ?
-                        Buffer.byteLength(data, 'utf8') :
-                        data.length;
+                var l = Buffer.isBuffer(data) ? data.length 
+                        : Buffer.byteLength(data, encoding || this._encoding);
                 this.setHeader("Content-Length", l);
             }
         }
         this.sendHeaders();
     }    
-    this.response.end(data, (encoding || this._encoding));
+    this.response.end(data, encoding || this._encoding);
 };
 
 /**
@@ -256,20 +268,9 @@ Handler.prototype._summary = function() {
 };
 
 /**
- * Cleans response.
- */
-Handler.prototype.clear = function() {
-    this._headers = {
-            "Server": "node.js:" + process.version,
-            "Content-Type": "text/html; charset=UTF-8"
-    };
-    this._statusCode = 200;
-    this._encoding = 'utf8';
-};
-
-/**
  * HTTP Error
  * @constructor
+ * @extends Error
  * @param code Status code
  * @param reason Reason
  */
