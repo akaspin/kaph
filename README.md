@@ -17,7 +17,7 @@ simplify response flow control:
         kaph.Handler.call(this, request, response, args);
         this.context = context;
     }
-    sys.inherits(Handler, kaph.Handler);
+    util.inherits(Handler, kaph.Handler);
     
     Handler.prototype.GET = function(name) {
         if (name == undefined) {

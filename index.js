@@ -2,7 +2,7 @@
  * Kaph. Routerless HTTP handler for node.js
  */
 
-var util = require('util');
+var inherits = require('util').inherits;
 var http = require('http');
 var url = require('url');
 var Buffer = require('buffer').Buffer;
@@ -282,5 +282,5 @@ function HttpError(code, reason) {
     this.message = this.code + " " + this.reason;
     Error.captureStackTrace(this);
 }
-util.inherits(HttpError, Error);
+inherits(HttpError, Error);
 exports.HttpError = HttpError;
