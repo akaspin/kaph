@@ -1,42 +1,8 @@
 # kaph*
 
-*kaph* is router-independent request handler for node.js.
+*kaph* is loose-coupled set of tools for handle requests under node.js.
 
 *In the Phoenician alphabet letter "kaph" indicates palm.
 
-## Usage
+## Design
 
-*kaph* does not interfere in node.js API. All that *kaph* do is two exports for 
-simplify response flow control:
-
-    var util = require("util");
-    var http = require("http");
-    var kaph = require("kaph");
-    
-    function Handler(request, response, context, args) {
-        kaph.Handler.call(this, request, response, args);
-        this.context = context;
-    }
-    util.inherits(Handler, kaph.Handler);
-    
-    Handler.prototype.GET = function(name) {
-        if (name == undefined) {
-            throw new kaph.HttpError(404, "Not Found, wrong url");
-        } else {
-            this.end("Handled! " + name + "<br />" + 
-                    "Setting: " + this.context.setting);
-        }
-    };
-    
-    var context = {setting: "Some setting"};
-    
-    http.createServer(function (request, response) {
-        var args = [];
-        if (request.url != '/') {
-            args = [request.url];
-        }
-        
-        (new Handler(request, response, context, args)).execute();
-    }).listen(8888);
-    
-So what does this mean? *kaph* 
