@@ -97,7 +97,7 @@ If for any reason you don't want to decorate `writeHead` method, just add
 In this case `writeHead` method remains untouched and you can get all setted 
 cookies by `deploy` method, that returns `Array` of prepared cookies.
     
-## Kaph chain usage
+## Usage in Kaph chain
 
 This module provides *operation* to use with *kaph*. Usage is similar to that 
 described above. With one difference - operation creates a new object `cookies` 
@@ -125,4 +125,13 @@ inside *kaph* handler.
     }).listen(9080);
 
 ## Pitfalls
+
+All pitfalls of this module concluded that "kaph" decorates `writeHead` method 
+of `http.ServerResponse` instance. If you use any architecture, that also 
+decorates this method - use *Kaph cookie* **after** all other decorations.
+
+For usage with *kaph* chain I recommend insert cookie *Operation* after all 
+others that may decorate `writeHead` method, and just before operations that 
+can write to `response`. 
+
 
