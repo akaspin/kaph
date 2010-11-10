@@ -8,7 +8,7 @@ exports.secret = hex_hmac_sha1(Math.random(), Math.random());
  */
 Op = {
     DEFAULT: function() {
-        this.cookies = new Proc(this.request, this.response);
+        this.cookies = new Proc(this.request.headers, this.response);
         return this.next();
     }
 };
@@ -18,16 +18,18 @@ exports.Op = Op;
  * Cookie processor.
  * @param {http.ServerRequest} request
  * @param {http.ServerResponse} response
+ * @param {Boolean} dontDecorate Don't decorate 
  * @returns {Proc}
  */
-function Proc(request, response) {
-    this._request = request;
+function Proc(headers, response, dontDecorate) {
+    this._headers = headers;
     this._response = response;
+    this._dontDecorate = dontDecorate;
 }
 exports.Proc = Proc;
 /**
- * Set cookie. At first call decorates method `writeHead` of instance
- * `http.ServerResponse`.
+ * Set cookie. If needed, at first call decorates method `writeHead` of 
+ * instance `http.ServerResponse`.
  * @param {String} name 
  * @param value Cookie value
  * @param {Object} options Optional options. See readme.
@@ -38,28 +40,30 @@ Proc.prototype.set = function(name, value, options, encrypt) {
     if (!this._outgoing) {
         this._outgoing = {};
         
-        // Decorate original method
-        var _writeHead = this._response.writeHead;
-        var COOKIE_KEY = 'Set-Cookie', slice = Array.prototype.slice;
-        var self = this;
-        this._response.writeHead = function() {
-            // Honor the passed args and method signature
-            // (see http.writeHead docs)
-            var args = slice.call(arguments), headers = args[args.length - 1];
-            if (!headers || typeof (headers) != 'object') {
-                // No header arg - create and append to args list
-                args.push(headers = []);
-            }
-
-            // Merge cookie values
-            var prev = headers[COOKIE_KEY], cookies = self.deploy() || [];
-            if (prev) cookies.push(prev);
-            if (cookies.length > 0)
-                headers[COOKIE_KEY] = cookies;
-
-            // Invoke original writeHead()
-            _writeHead.apply(this, args);
-        };
+        if (!this._dontDecorate) {
+            // Decorate original method
+            var _writeHead = this._response.writeHead;
+            var COOKIE_KEY = 'Set-Cookie', slice = Array.prototype.slice;
+            var self = this;
+            this._response.writeHead = function() {
+                // Honor the passed args and method signature
+                // (see http.writeHead docs)
+                var args = slice.call(arguments), headers = args[args.length - 1];
+                if (!headers || typeof (headers) != 'object') {
+                    // No header arg - create and append to args list
+                    args.push(headers = []);
+                }
+                
+                // Merge cookie values
+                var prev = headers[COOKIE_KEY], cookies = self.deploy() || [];
+                if (prev) cookies.push(prev);
+                if (cookies.length > 0)
+                    headers[COOKIE_KEY] = cookies;
+                
+                // Invoke original writeHead()
+                _writeHead.apply(this, args);
+            };
+        }
     }
     
     // determine expiration date
@@ -100,7 +104,7 @@ Proc.prototype.set = function(name, value, options, encrypt) {
 Proc.prototype.get = function(name, decrypt) {
     // Parse cookies if not yet parsed
     if (!this._incoming) {
-        var header = this._request.headers["cookie"] || "";
+        var header = this._headers["cookie"] || "";
         var self = this;
         this._incoming = {};
         
@@ -155,7 +159,7 @@ Proc.prototype.clear = function(name) {
  * @returns {Array}
  */
 Proc.prototype.deploy = function() {
-    if (this._outgoing) return;
+    if (!this._outgoing) return;
     var stream = [];
     for (var k in this._outgoing) {
         stream.push(this._outgoing[k]);
