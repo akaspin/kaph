@@ -14,9 +14,9 @@ Op = {
 exports.Op = Op;
 
 /**
- * 
- * @param request
- * @param response
+ * Writer facade.
+ * @param {http.ServerRequest} request
+ * @param {http.ServerResponse} response
  * @returns {Writer}
  */
 function Writer(request, response) {
