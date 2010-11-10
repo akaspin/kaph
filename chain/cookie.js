@@ -27,6 +27,7 @@ function Proc(headers, response, dontDecorate) {
     this._dontDecorate = dontDecorate;
 }
 exports.Proc = Proc;
+
 /**
  * Set cookie. If needed, at first call decorates method `writeHead` of 
  * instance `http.ServerResponse`.

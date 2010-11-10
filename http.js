@@ -30,7 +30,7 @@ exports.Handler = Handler;
  */
 Handler.prototype.next = function() {
     this._level++;
-    var op = this.chain[this._level];
+    var op = this._chain[this._level];
     try {
         var meth = op[this.request.method] || op['DEFAULT'];
         if (!meth) throw new HandlerError(405, 'Operation hasn\'t methods ' + 

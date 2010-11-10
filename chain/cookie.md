@@ -28,16 +28,19 @@ argiments given to constructor: `request.headers` and `response`.
         // ... and encrypted
         cookie.set('encrypted', 'Secret value', {days: 30}, true);
         
-        // get some cookies
+        // Get some cookies
         var simple = cookie.get('simple');
         var encrypted = cookie.get('encrypted', true);
+        
+        // And kill!
+        cookie.clear('notneeded');
         
         response.writeHead(200, {'Content-Type': "text/html"});    
         response.end('simple: ' + simple + 
                 ', encrypted: ' + encrypted);
     }).listen(9080);
 
-New `cookie` object has two methods `set` and `get`.
+New `cookie` object has three methods `set`, `get` and `clear`.
 
 `set` method of `cookie` object as is evident from its name, sets new cookie 
 and takes four arguments: 
@@ -59,6 +62,9 @@ Cookie `options` is object that may contain several optional properties:
 
 `get` method takes two arguments `name` and `decrypt` (see below), and returns
 cookie value or `undefined` if cookie not exists.
+
+Also you can unset cookies with `clear` method that takes only one parameter - 
+cookie name.
 
 ### Encrypted cookies
 
@@ -93,4 +99,11 @@ In this case `writeHead` method remains untouched and you can get all setted
 cookies by `deploy` method, that returns `Array` of prepared cookies.
     
 ## Kaph chain usage
+
+This module provides *operation* to use with *kaph*. Usage is similar to that 
+described above. With one difference - operation creates a new object `cookies` 
+inside *kaph* handler.
+
+
+
 
