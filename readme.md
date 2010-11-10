@@ -99,7 +99,8 @@ you find a few things that can make life much more pleasant:
 * [writer](https://github.com/akaspin/kaph/blob/master/chain/writer.md) - 
   facade for working with `http.ServerResponse`
 
-Each of them can be used independently of *kaph*.
+Each of them can be used independently of *kaph*. And of course *kaph*, 
+not depend on them.
 
 ## How about router?
 

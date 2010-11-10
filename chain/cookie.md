@@ -84,7 +84,6 @@ If for any reason you don't want to decorate `writeHead` method, just add
     var kaphCookie = require('kaph/chain/cookie');
     
     http.createServer(function(request, response) {
-        // Make cookies object
         var cookie = new kaphCookie.Proc(request.headers, response, true);
         
         cookie.set('simple', 'Simple value');
@@ -104,6 +103,26 @@ This module provides *operation* to use with *kaph*. Usage is similar to that
 described above. With one difference - operation creates a new object `cookies` 
 inside *kaph* handler.
 
+    var http = require('http');
+    var HttpHandler = require('kaph/http').Handler;
+    var kaphCookie = require('kaph/chain/cookie');
+    
+    Op = {
+        GET: function() {
+            this.cookies.set('simple', 'Simple value');
+            var simple = this.cookies.get('simple');
+    
+            this.response.writeHead(200, 
+                    {'Content-Type': "text/html; charset=UTF-8"});
+            this.response.end('simple: ' + simple);
+        }
+    };
+    
+    var chain = [kaphCookie.Op, Op];
+    
+    http.createServer(function(request, response) {
+        (new HttpHandler(request, response, chain)).next();
+    }).listen(9080);
 
-
+## Pitfalls
 
