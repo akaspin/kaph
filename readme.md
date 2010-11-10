@@ -10,7 +10,7 @@
 Design of *kaph* was inspired by 
 [Connect](http://github.com/senchalabs/Connect), 
 [Tornado](http://www.tornadoweb.org/) and many others. But unlike them, it was 
-designed to make all components as independent from each other without a large 
+designed to make all components as independent from each other without large 
 overhead. 
 
 ## Usage
@@ -94,8 +94,10 @@ is important. Each instance has next properties:
 As stated in the beginning, *kaph* is not framework. But in directory `chain` 
 you find a few things that can make life much more pleasant:
 
-* cookie - work with cookies.
-* writer - facade for working with `http.ServerResponse`
+* [cookie](https://github.com/akaspin/kaph/blob/master/chain/cookie.md) - 
+  work with cookies.
+* [writer](https://github.com/akaspin/kaph/blob/master/chain/writer.md) - 
+  facade for working with `http.ServerResponse`
 
 Each of them can be used independently of *kaph*.
 
