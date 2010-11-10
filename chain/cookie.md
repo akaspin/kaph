@@ -89,7 +89,8 @@ If for any reason you don't want to decorate `writeHead` method, just add
         response.end('simple: ' + simple);
     }).listen(9080);
     
-
+In this case `writeHead` method remains untouched and you can get all setted 
+cookies by `deploy` method, that returns `Array` of prepared cookies.
     
 ## Kaph chain usage
 
