@@ -4,11 +4,11 @@ Architecture independent *node.js* module for work with cookies.
 
 This module written on the basis of 
 [cookie-node](https://github.com/jed/cookie-node) (with large parts of code). 
-But unlike it, didn't extends `http.ServerRequest` and 
-`http.ServerResponse` objects. Instead that. if it's not forbidden, *kaph 
-cookie* decorate `writeHead` method of `http.ServerResponse` instance on first 
-set of cookie. Also *kaph cookie* provides object for control. This design 
-gives slightly higher but quite acceptable overhead.
+But unlike it, didn't extends `http.ServerRequest` and `http.ServerResponse` 
+objects. Instead that. if it's not forbidden, *kaph cookie* decorate 
+`writeHead` method of `http.ServerResponse` instance on first set of cookie. 
+Also *kaph cookie* provides object for control. This design gives slightly 
+higher but quite acceptable overhead.
 
 ## Usage
 
