@@ -88,9 +88,25 @@ redirect URL and optional `permanent` flag.
 With `permanent` flag, `redirect` send client status `301` instead of `302`. 
 You can't redirect after after headers have been written.
 
-## Usage with Kaph chain
+## Usage in Kaph chain
 
-TODO
+This module provides *operation* to use with *kaph*. Usage is similar to that 
+described above. With one difference - operation creates a new object `writer` 
+inside *kaph* handler.
 
-## Pitfalls
-
+    var http = require('http');
+    var HttpHandler = require('kaph/http').Handler;
+    var kaphWriter = require('kaph/chain/writer');
+    
+    Op = {
+        GET: function() {
+            this.writer.end('It\'s works');
+        }
+    };
+    
+    var chain = [kaphWriter.Op, Op];
+    
+    http.createServer(function(request, response) {
+        (new HttpHandler(request, response, chain)).next();
+    }).listen(9080);
+    

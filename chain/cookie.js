@@ -37,6 +37,7 @@ exports.Proc = Proc;
  * @param {Boolean} encrypt Encrypt cookie value
  */
 Proc.prototype.set = function(name, value, options, encrypt) {
+    if (this._response._headerSent) return;
     options = options || {};
     if (!this._outgoing) {
         this._outgoing = {};

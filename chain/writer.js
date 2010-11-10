@@ -23,7 +23,6 @@ function Writer(request, response) {
     this._request = request;
     this._response = response;
     
-    this._headersWritten = false;
     this._encoding = 'utf8';
     this._statusCode = 200;
     this._headers = {'Content-Type': "text/html; charset=UTF-8"};
@@ -35,7 +34,7 @@ exports.Writer = Writer;
  * @param {Number} code HTTP Status code
  */
 Writer.prototype.setStatus = function(code) {
-    if (!this._headersWritten && code in http.STATUS_CODES)
+    if (!this._response._headerSent && code in http.STATUS_CODES)
             this._statusCode = code;
 };
 
@@ -46,6 +45,7 @@ Writer.prototype.setStatus = function(code) {
  * @throws {Error}
  */
 Writer.prototype.setHeader = function(name, value) {
+    if (this._response._headerSent) return;
     value = value ? value.toString() : '';
     if (value != value.replace(/[\x00-\x1f]/, " ").substring(0, 4000))
         throw new Error('Unsafe header value ' + value);
@@ -61,8 +61,7 @@ Writer.prototype.write = function(data, encoding) {
     if (!data) return; // If no data - do nothing
     if (!Buffer.isBuffer(data) && typeof data !== 'string')
             data = data.toString();
-    
-    if (!this._headersWritten) this._sendHeaders();
+    if (!this._response._headerSent) this._sendHeaders();
     this._response.write(data, (encoding || this._encoding));
 };
 
@@ -74,7 +73,7 @@ Writer.prototype.write = function(data, encoding) {
 Writer.prototype.end = function(data, encoding) {
     if (data && !Buffer.isBuffer(data) && typeof data !== 'string')
             data = data.toString();
-    if (!this._headersWritten) {
+    if (!this._response._headerSent) {
         // if any data present - add some info in headers:
         if (!!data && this._statusCode == 200 
                 && this._request.method == 'GET') {
@@ -96,8 +95,6 @@ Writer.prototype.end = function(data, encoding) {
             }
             
             // Content-Length
-            
-            
             if (!("Content-Length" in this._headers)) {
                 var l = Buffer.isBuffer(data) ? data.length 
                         : Buffer.byteLength(data, encoding || this._encoding);
@@ -117,7 +114,7 @@ Writer.prototype.end = function(data, encoding) {
  */
 Writer.prototype.redirect = function(redirectUrl, permanent) {
     permanent = permanent || false;
-    if (this._headersWritten) {
+    if (this._response._headerSent) {
         throw new Error('Cannot redirect after headers have been written');
     }
     this.setStatus(permanent ? 301 : 302);
@@ -130,6 +127,5 @@ Writer.prototype.redirect = function(redirectUrl, permanent) {
  * Sends all headers to client.
  */
 Writer.prototype._sendHeaders = function() {
-    this._headersWritten = true;
     this._response.writeHead(this._statusCode, this._headers);
 };
