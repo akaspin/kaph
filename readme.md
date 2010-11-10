@@ -97,6 +97,8 @@ you find a few things that can make life much more pleasant:
 * cookie - work with cookies.
 * writer - facade for working with `http.ServerResponse`
 
+Each of them can be used independently of *kaph*.
+
 ## How about router?
 
 I'm use my own [daleth](https://github.com/akaspin/daleth)
