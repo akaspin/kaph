@@ -7,7 +7,8 @@ This module written on the basis of
 But unlike it, didn't extends `http.ServerRequest` and 
 `http.ServerResponse` objects. Instead that. if it's not forbidden, *kaph 
 cookie* decorate `writeHead` method of `http.ServerResponse` instance on first 
-set of cookie. This design gives slightly higher but quite acceptable overhead.
+set of cookie. Also *kaph cookie* provides object for control. This design 
+gives slightly higher but quite acceptable overhead.
 
 ## Usage
 
