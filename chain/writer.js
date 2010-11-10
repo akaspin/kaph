@@ -34,9 +34,9 @@ exports.Writer = Writer;
  * Sets response status code. 
  * @param {Number} code HTTP Status code
  */
-Handler.prototype.setStatus = function(code) {
-    if (!this.headersWritten && code in http.STATUS_CODES)
-            this.statusCode = code;
+Writer.prototype.setStatus = function(code) {
+    if (!this._headersWritten && code in http.STATUS_CODES)
+            this._statusCode = code;
 };
 
 /**
