@@ -43,9 +43,10 @@ Writer.prototype.setStatus = function(code) {
  * Set response header.
  * @param {String} name
  * @param value
+ * @throws {Error}
  */
 Writer.prototype.setHeader = function(name, value) {
-    value = value.toString();
+    value = value ? value.toString() : '';
     if (value != value.replace(/[\x00-\x1f]/, " ").substring(0, 4000))
         throw new Error('Unsafe header value ' + value);
     this._headers[name] = value;
@@ -57,7 +58,9 @@ Writer.prototype.setHeader = function(name, value) {
  * @param encoding
  */
 Writer.prototype.write = function(data, encoding) {
-    if (!data || data == null) return; // If no data - do nothing
+    if (!data) return; // If no data - do nothing
+    if (!Buffer.isBuffer(data) && typeof data !== 'string')
+            data = data.toString();
     
     if (!this._headersWritten) this._sendHeaders();
     this._response.write(data, (encoding || this._encoding));
@@ -69,6 +72,8 @@ Writer.prototype.write = function(data, encoding) {
  * @param encoding
  */
 Writer.prototype.end = function(data, encoding) {
+    if (data && !Buffer.isBuffer(data) && typeof data !== 'string')
+            data = data.toString();
     if (!this._headersWritten) {
         // if any data present - add some info in headers:
         if (!!data && this._statusCode == 200 
@@ -91,6 +96,8 @@ Writer.prototype.end = function(data, encoding) {
             }
             
             // Content-Length
+            
+            
             if (!("Content-Length" in this._headers)) {
                 var l = Buffer.isBuffer(data) ? data.length 
                         : Buffer.byteLength(data, encoding || this._encoding);
