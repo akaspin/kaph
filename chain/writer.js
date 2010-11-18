@@ -1,3 +1,4 @@
+var http = require('http');
 var url = require('url');
 var Buffer = require('buffer').Buffer;
 var crypto = require('crypto');
