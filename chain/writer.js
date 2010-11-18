@@ -120,7 +120,7 @@ Writer.prototype.redirect = function(redirectUrl, permanent) {
     }
     this.setStatus(permanent ? 301 : 302);
     redirectUrl = redirectUrl.replace(/[\x00-\x1f]/, "");
-    this.setHeader('Location', url.resolve(this.request.url, redirectUrl));
+    this.setHeader('Location', url.resolve(this._request.url, redirectUrl));
     this.end();
 };
 
