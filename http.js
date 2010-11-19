@@ -43,7 +43,9 @@ Handler.prototype.next = function() {
 };
 
 Handler.prototype.error = function(code, reason) {
-    throw new HandlerError(code, reason);
+    var op = this._chain[this._level];
+    var errGen = op['ERROR'] || ERROR;
+    this._handleError(new HandlerError(code, reason), errGen);
 };
 
 /**
