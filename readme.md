@@ -13,6 +13,14 @@ Design of *kaph* was inspired by
 designed to make all components as independent from each other without large 
 overhead. 
 
+## Installation
+
+You can install *kaph* as usual - by copy "kaph" directory in your 
+`~/.node_libraries` or via *npm*
+
+    npm install kaph
+
+
 ## Usage
 
 To handle request *Kaph* executes *chain* of defined operations.
