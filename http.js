@@ -55,7 +55,7 @@ Handler.prototype.error = function(code, reason) {
  */
 Handler.prototype._handleError = function(e, errGen) {
     var summary = this.request.method + " " + this.request.url + 
-        '(level ' + this._level + '):';
+        ' (level ' + this._level + '):';
     var code = 0;
     var message = '';
     

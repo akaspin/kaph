@@ -1,0 +1,28 @@
+{
+    "name" : "kaph",
+    "description" : "Loose-coupled set of tools for handle requests under node.js",
+    "version" : "0.1.1",
+    "author" : "Alexander Dorofeev",
+    "maintainers" : [
+        {
+            "name" : "Alexander Dorofeev",
+            "email" : "aka.spin@gmail.com"
+        }
+    ],
+    "repository" : {
+        "type" : "git",
+        "url" : "http://github.com/akaspin/kaph.git"
+    },
+    "bugs" : {
+        "web" : "http://github.com/akaspin/kaph/issues"
+    },
+    "directories" : {
+        "chain" : "./chain"
+    },
+    "licenses" : [
+        {
+            "type": "MIT",
+            "url": "http://github.com/akaspin/nun/kaph/master/LICENSE"
+        }
+    ]
+}
