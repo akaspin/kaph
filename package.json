@@ -1,7 +1,12 @@
 {
     "name" : "kaph",
     "description" : "Loose-coupled set of tools for handle requests under node.js",
-    "version" : "0.1.1",
+    "version" : "0.1.2",
+    "modules" : {
+        "http" : "./http",
+        "chain/cookie" : "./chain/cookie", 
+        "chain/writer" : "./chain/writer" 
+    },
     "author" : "Alexander Dorofeev",
     "maintainers" : [
         {
